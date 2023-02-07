@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "expess": "^0.0.1-security"
   }
 }
