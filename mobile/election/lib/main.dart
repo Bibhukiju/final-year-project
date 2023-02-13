@@ -1,4 +1,5 @@
-import 'package:election/screens/homescreen.dart';
+import 'package:election/screens/home_page.dart';
+// import 'package:election/screens/homescreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,8 +16,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const HomePage(),
     );
   }
 }
