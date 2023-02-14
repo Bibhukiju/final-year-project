@@ -1,4 +1,5 @@
 import 'package:election/screens/home_page.dart';
+import 'package:election/screens/voting_page.dart';
 // import 'package:election/screens/homescreen.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const VotingPage(),
     );
   }
 }
