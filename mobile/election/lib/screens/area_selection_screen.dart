@@ -7,6 +7,7 @@ import 'package:election/screens/voting_screen.dart';
 import '../components/custom_text_field.dart';
 
 class AreaSelectionScreen extends StatefulWidget {
+  static const routeName = '/AreaSelectionScreen';
   const AreaSelectionScreen({super.key});
 
   @override
