@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:election/constants/constants.dart';
+import 'package:election/screens/election_page.dart';
 import 'package:flutter/material.dart';
 
 final List<String> imgList = [
@@ -131,8 +132,17 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 10,
           ),
-          page('VOTE', Icons.how_to_vote,
-              'Lets not waste our right to choose the candidate who represents us in a better way'),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) => const ElectionPage(),
+                  ));
+            },
+            child: page('VOTE', Icons.how_to_vote,
+                'Lets not waste our right to choose the candidate who represents us in a better way'),
+          ),
           const SizedBox(
             height: 10,
           ),
