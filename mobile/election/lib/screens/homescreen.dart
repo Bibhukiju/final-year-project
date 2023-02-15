@@ -1,5 +1,6 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:election/constants/constants.dart';
-import 'package:election/components/carousel.dart';
+import 'package:election/screens/election_page.dart';
 import 'package:flutter/material.dart';
 
 final List<String> imgList = [
@@ -56,15 +57,47 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _current = 0;
+  final CarouselController _controller = CarouselController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      body: SingleChildScrollView(
         child: Column(children: [
-          Carousel(),
-
+          CarouselSlider(
+            items: imageSliders,
+            carouselController: _controller,
+            options: CarouselOptions(
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 2.0,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                }),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: imgList.asMap().entries.map((entry) {
+              return GestureDetector(
+                onTap: () => _controller.animateToPage(entry.key),
+                child: Container(
+                  width: 12.0,
+                  height: 12.0,
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 4.0),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black)
+                          .withOpacity(_current == entry.key ? 0.9 : 0.4)),
+                ),
+              );
+            }).toList(),
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -99,17 +132,26 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(
             height: 10,
           ),
-          menuCard('VOTE', Icons.how_to_vote,
-              'Lets not waste our right to choose the candidate who represents us in a better way'),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) => const ElectionPage(),
+                  ));
+            },
+            child: page('VOTE', Icons.how_to_vote,
+                'Lets not waste our right to choose the candidate who represents us in a better way'),
+          ),
           const SizedBox(
             height: 10,
           ),
-          menuCard('SEE RESULTS', Icons.person,
+          page('SEE RESULTS', Icons.person,
               'See the results of the latest election and get to know who got elected. You can see the results of any place.'),
           const SizedBox(
             height: 10,
           ),
-          menuCard('CANDIDATES', Icons.copy_all,
+          page('CANDIDATES', Icons.copy_all,
               'Get the information about who is giving candidacy in your area.'),
         ]),
       ),
@@ -117,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget menuCard(
+page(
   String title,
   final IconData next,
   String text,
