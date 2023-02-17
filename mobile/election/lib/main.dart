@@ -1,10 +1,12 @@
+import 'package:election/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:election/providers/candidate_provider.dart';
+
+import 'package:election/screens/election_screen.dart';
 import 'package:election/screens/area_selection_screen.dart';
-import 'package:election/screens/homescreen.dart';
 import 'package:election/screens/voting_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,18 +24,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'MeroVote',
-        theme: ThemeData(
-          textButtonTheme: TextButtonThemeData(
-              style: ButtonStyle(
-            padding: const MaterialStatePropertyAll(
-                EdgeInsets.symmetric(vertical: 10.0, horizontal: 48.0)),
-            shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10))),
-            backgroundColor: const MaterialStatePropertyAll(Color(0XFF082585)),
-          )),
-        ),
-        home: HomeScreen(),
+        theme: Styles.themeData,
+        home: const HomeScreen(),
         routes: {
+          ElectionScreen.routeName: (ctx) => const ElectionScreen(),
           AreaSelectionScreen.routeName: (ctx) => const AreaSelectionScreen(),
           VotingScreen.routeName: (ctx) => const VotingScreen(),
         },
