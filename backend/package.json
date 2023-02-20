@@ -5,6 +5,9 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.0",
-    "expess": "^0.0.1-security"
+    "expess": "^0.0.1-security",
+    "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.12"
   }
 }
