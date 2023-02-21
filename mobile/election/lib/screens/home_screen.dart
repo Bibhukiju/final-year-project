@@ -174,7 +174,7 @@ class NoticeBoard extends StatelessWidget {
           const Text("NEWS AND NOTICES", style: Styles.titleStyle),
           Expanded(
             child: ListView.builder(
-              itemCount: fakeData.newsData.length,
+              itemCount: 3,
               itemBuilder: (BuildContext context, int index) => NoticeTile(
                 title: fakeData.newsData[fakeData.newsData.length - 1 - index]
                         ["title"]
