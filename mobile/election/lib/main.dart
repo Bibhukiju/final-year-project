@@ -1,7 +1,12 @@
-import 'package:election/screens/home_page.dart';
-import 'package:election/screens/voting_page.dart';
-// import 'package:election/screens/homescreen.dart';
+import 'package:election/constants/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:election/providers/candidate_provider.dart';
+
+import 'package:election/screens/election_screen.dart';
+import 'package:election/screens/area_selection_screen.dart';
+import 'package:election/screens/voting_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,14 +17,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CandidateProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'MeroVote',
+        theme: Styles.themeData,
+        home: const HomeScreen(),
+        routes: {
+          ElectionScreen.routeName: (ctx) => const ElectionScreen(),
+          AreaSelectionScreen.routeName: (ctx) => const AreaSelectionScreen(),
+          VotingScreen.routeName: (ctx) => const VotingScreen(),
+        },
       ),
-      home: const VotingPage(),
     );
   }
 }
