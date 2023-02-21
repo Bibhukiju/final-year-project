@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm"
-import { User } from "../entities/user.entity"
+import { User } from "../entities/Users/user.entity"
 
 
 export const AppDataSource = new DataSource({
@@ -9,6 +9,6 @@ export const AppDataSource = new DataSource({
     username: "root",
     password: "",
     database: "election",
-    entities: [User],
-    logging: true
+    entities: ["dist/src/entities/Users/*.js"],
+    logging: true,
 })
