@@ -9,6 +9,7 @@ export const AppDataSource = new DataSource({
     username: "root",
     password: "",
     database: "election",
-    entities: [User],
-    logging: true
+    entities: ["dist/src/entities/*.entity.js",],
+    logging: true,
+    synchronize: true
 })

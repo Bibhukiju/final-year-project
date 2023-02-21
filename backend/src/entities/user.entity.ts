@@ -6,7 +6,7 @@ export class User {
     user_id: string
 
 
-    @Column()
+    @Column({ unique: true })
     citizenship_number: string;
 
     @Column()
