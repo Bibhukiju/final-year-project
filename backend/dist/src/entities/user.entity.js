@@ -22,7 +22,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "user_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
 ], User.prototype, "citizenship_number", void 0);
 __decorate([

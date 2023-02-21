@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { User } from "../entities/Users/user.entity"
+import { User } from "../entities/user.entity"
 import { AppDataSource } from "../utils/dataSource"
 
 
