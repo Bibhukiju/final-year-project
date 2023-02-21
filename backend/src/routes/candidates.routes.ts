@@ -4,6 +4,6 @@ import { getCandidates } from "../controllers/candidates.controller";
 
 const candidateRoutes = Router();
 
-candidateRoutes.post('/candidates', getCandidates)
+candidateRoutes.get('/candidates/:id', getCandidates)
 
 export default candidateRoutes;

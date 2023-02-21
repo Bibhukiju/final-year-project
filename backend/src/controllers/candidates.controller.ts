@@ -1,22 +1,25 @@
 import { Request, Response } from "express";
-import { Candidates } from "../entities/candidates.entity";
+import { Area } from "../entities/area.entity";
 import { AppDataSource } from "../utils/dataSource";
 
-const candidateRepository = AppDataSource.getRepository(Candidates)
+const areaRepository = AppDataSource.getRepository(Area)
 export const getCandidates = async (req: Request, res: Response): Promise<Response> => {
-    const { areaCode } = req.body;
+    const areaCode = req.params.id;
+    console.log(areaCode);
+    console.log("hello from candidates")
     try {
-        const candidates = candidateRepository.find({
+        const candidates = await areaRepository.find({
             relations: {
-                area: true,
+                candidates: true
             },
             where: {
-                area: areaCode
+                area_id: areaCode
             }
         });
+        console.log(candidates)
         return res.send(candidates)
     } catch (error) {
-
+        console.log(error)
     }
 
 }
