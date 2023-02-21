@@ -17,9 +17,13 @@ export const getCandidates = async (req: Request, res: Response): Promise<Respon
             }
         });
         console.log(candidates)
-        return res.send(candidates)
+        return res.send(candidates[0])
     } catch (error) {
         console.log(error)
     }
 
+
+    
 }
+
+    

@@ -18,7 +18,7 @@ const getCandidates = async (req, res) => {
             }
         });
         console.log(candidates);
-        return res.send(candidates);
+        return res.send(candidates[0]);
     }
     catch (error) {
         console.log(error);
