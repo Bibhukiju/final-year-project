@@ -30,6 +30,4 @@ export const verifyUser = async (req: Request, res: Response): Promise<Response>
         }
     else
         return res.status(404).send({ message: 'Fill all the data' })
-
-
 }
