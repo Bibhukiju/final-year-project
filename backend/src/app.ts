@@ -1,4 +1,5 @@
 import * as express from "express";
+import candidateRoutes from "./routes/candidates.routes";
 import userRouter from "./routes/user.routes";
 import { AppDataSource } from "./utils/dataSource";
 
@@ -12,6 +13,7 @@ const app = express();
 AppDataSource.initialize().then(() => { console.log("db initialized") }).catch(e => { console.log(e) })
 app.use(express.json());
 app.use(userRouter)
+app.use(candidateRoutes)
 
 
 
