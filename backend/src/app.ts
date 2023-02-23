@@ -4,8 +4,6 @@ import userRouter from "./routes/user.routes";
 import voteRoutes from "./routes/vote.routes";
 import { AppDataSource } from "./utils/dataSource";
 
-
-
 // ? variables
 const PORT: any = (process.env.PORT) || 3000;
 const app = express();
@@ -18,8 +16,6 @@ app.use(express.json());
 app.use(userRouter)
 app.use(candidateRoutes)
 app.use(voteRoutes)
-
-
 
 app.listen(PORT, () => {
     console.log(`server is listening at ${PORT}`)

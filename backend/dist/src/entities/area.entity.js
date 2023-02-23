@@ -15,6 +15,8 @@ const candidates_entity_1 = require("./candidates.entity");
 let Area = class Area {
     area_id;
     area;
+    district;
+    provience;
     candidates;
 };
 __decorate([
@@ -22,9 +24,17 @@ __decorate([
     __metadata("design:type", String)
 ], Area.prototype, "area_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Area.prototype, "area", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Area.prototype, "district", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Area.prototype, "provience", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => candidates_entity_1.Candidates, (candidate) => candidate.area),
     __metadata("design:type", Array)

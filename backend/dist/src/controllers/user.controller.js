@@ -11,11 +11,13 @@ const verifyUser = async (req, res) => {
         try {
             const user = await userRepository.find({
                 where: {
-                    name,
-                    date_of_birth: dob,
-                    citizenship_number: citizenshipId
+                    name: 'Bibhu kiju',
+                    date_of_birth: '2058-11-25',
+                    citizenship_number: "29-01-75-00447"
                 }
             });
+            console.log(user);
+            console.log(user.length, 'length of user');
             if (user.length === 1) {
                 return res.status(200).send({ message: 'User found' });
             }
