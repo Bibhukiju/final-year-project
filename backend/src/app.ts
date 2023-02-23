@@ -1,5 +1,6 @@
 import * as express from "express";
 import candidateRoutes from "./routes/candidates.routes";
+import testRoutes from "./routes/test.routes";
 import userRouter from "./routes/user.routes";
 import voteRoutes from "./routes/vote.routes";
 import { AppDataSource } from "./utils/dataSource";
@@ -13,6 +14,8 @@ AppDataSource.initialize().then(() => { console.log("db initialized") }).catch(e
 
 // ? middlewares
 app.use(express.json());
+
+app.use(testRoutes)
 app.use(userRouter)
 app.use(candidateRoutes)
 app.use(voteRoutes)

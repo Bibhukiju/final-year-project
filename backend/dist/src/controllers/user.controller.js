@@ -11,9 +11,9 @@ const verifyUser = async (req, res) => {
         try {
             const user = await userRepository.find({
                 where: {
-                    name: 'Bibhu kiju',
-                    date_of_birth: '2058-11-25',
-                    citizenship_number: "29-01-75-00447"
+                    name,
+                    citizenship_number: citizenshipId,
+                    date_of_birth: dob,
                 }
             });
             console.log(user);
@@ -23,7 +23,8 @@ const verifyUser = async (req, res) => {
             }
             else {
                 return res.status(404).send({
-                    message: 'User not found'
+                    message: 'User not found',
+                    user
                 });
             }
         }

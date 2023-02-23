@@ -11,7 +11,9 @@ export const verifyUser = async (req: Request, res: Response): Promise<Response>
         try {
             const user = await userRepository.find({
                 where: {
-                    name: 'Bibhu Kiju',
+                    name,
+                    citizenship_number: citizenshipId,
+                    date_of_birth: dob,
                 }
             })
             console.log(user);
@@ -21,7 +23,8 @@ export const verifyUser = async (req: Request, res: Response): Promise<Response>
             }
             else {
                 return res.status(404).send({
-                    message: 'User not found'
+                    message: 'User not found',
+                    user
                 })
             }
         } catch (error) {
