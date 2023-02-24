@@ -9,7 +9,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
     username: "root",
     password: "",
     database: "election",
-    entities: ["dist/src/entities/*.entity.js",],
+    entities: ['dist/src/entities/*.entity.js'],
     logging: true,
-    synchronize: true
+    synchronize: true,
 });

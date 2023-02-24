@@ -1,7 +1,7 @@
-
-import 'package:election/providers/candidate_provider.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
+import 'package:election/providers/candidate_provider.dart';
 
 class CustomGridTile extends StatelessWidget {
   final String candidateId;
@@ -13,7 +13,6 @@ class CustomGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cadidateData = Provider.of<CandidateProvider>(context, listen: false)
         .findCandidateById(candidateId);
-
     return LayoutBuilder(
       builder: (context, tileContraints) {
         return Stack(
@@ -27,9 +26,13 @@ class CustomGridTile extends StatelessWidget {
               child: GridTile(
                   header: Container(
                     height: tileContraints.maxHeight * 0.75,
-                    decoration: const BoxDecoration(color: Color(0XFFD9D9D9)),
-                    child: Center(
-                        child: Text(cadidateData.candidateName.toString())),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                            cadidateData.candidateImageUrl.toString()),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                   footer: Padding(
                     padding: const EdgeInsets.all(4.0),
@@ -56,7 +59,7 @@ class CustomGridTile extends StatelessWidget {
                   )),
             ),
 
-            // Listens to the voteOrder state and changes the UI accoridingly
+            // Listens to the voteOrder state and changes the UI accordingly
             Consumer<CandidateProvider>(builder: (context, value, _) {
               if (value.voteOrder.contains(candidateId)) {
                 int index = value.voteOrder.indexOf(candidateId);

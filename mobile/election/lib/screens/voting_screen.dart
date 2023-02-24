@@ -1,7 +1,8 @@
+import 'package:election/components/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:election/components/custom_grid_tile.dart';
+import 'package:election/components/candidate_grid_tile.dart';
 import 'package:election/components/custom_text_button.dart';
 import 'package:election/constants/constants.dart';
 import 'package:election/constants/styles.dart';
@@ -34,28 +35,75 @@ class VotingScreen extends StatelessWidget {
 }
 
 // Vote Selection Area
-class CandidatesGridArea extends StatelessWidget {
+class CandidatesGridArea extends StatefulWidget {
   const CandidatesGridArea({super.key});
 
   @override
+  State<CandidatesGridArea> createState() => _CandidatesGridAreaState();
+}
+
+class _CandidatesGridAreaState extends State<CandidatesGridArea> {
+  bool isInit = true;
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      final extractedData =
+          ModalRoute.of(context)!.settings.arguments as Map<String, String?>;
+      final areaId = extractedData['areaId'];
+      print('area id: $areaId');
+      fetchCandidateList =
+          Provider.of<CandidateProvider>(context, listen: false)
+              .fetchCandidates('a02');
+      isInit = false;
+    }
+
+    super.didChangeDependencies();
+  }
+
+  late Future fetchCandidateList;
+  @override
   Widget build(BuildContext context) {
-    final candidateList = Provider.of<CandidateProvider>(context, listen: false).candidateList;
-    return Expanded(
-      child: GridView.builder(
-        itemCount: candidateList.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 0.75,
-        ),
-        itemBuilder: (ctx, index) {
-          return CustomGridTile(
-            candidateId: candidateList[index].id.toString(),
+    final candidateList = Provider.of<CandidateProvider>(context).candidateList;
+    return FutureBuilder(
+        future: fetchCandidateList,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // TODO: Handle error
+            if (snapshot.hasError) {
+              print(snapshot.error);
+            }
+            return candidateList.isEmpty
+                ? const Expanded(
+                    child: Center(
+                    child: Text(
+                      'NO ELECTION CAMPAIGN IN THIS AREA',
+                      style: Styles.labelStyle,
+                    ),
+                  ))
+                : Expanded(
+                    child: GridView.builder(
+                      itemCount: candidateList.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 0.75,
+                      ),
+                      itemBuilder: (ctx, index) {
+                        return CustomGridTile(
+                          candidateId: candidateList[index].id.toString(),
+                        );
+                      },
+                    ),
+                  );
+          }
+          return const Expanded(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
-        },
-      ),
-    );
+        });
   }
 }
 
@@ -93,11 +141,34 @@ class QuickGuideArea extends StatelessWidget {
   }
 }
 
-
 // Button Section
 // Contains RESET and VOTE buttons
-class ButtonArea extends StatelessWidget {
+class ButtonArea extends StatefulWidget {
   const ButtonArea({super.key});
+
+  @override
+  State<ButtonArea> createState() => _ButtonAreaState();
+}
+
+class _ButtonAreaState extends State<ButtonArea> {
+  void submitVote() {
+    final candidateProviderInstance =
+        Provider.of<CandidateProvider>(context, listen: false);
+    if (candidateProviderInstance.candidateList.isEmpty) {
+      showSnackBarWidget(
+          ctx: context,
+          message:
+              'No Votes Were Selected Or No Election Campaign In The This Area',
+              
+        duration: const Duration(seconds: 4));
+            
+      return;
+    }
+    Future.value(candidateProviderInstance.submitTheVoteOrder('a02'))
+        .catchError((e) {
+      print(e);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,9 +185,7 @@ class ButtonArea extends StatelessWidget {
         const Spacer(),
         CustomTextButton(
           title: 'VOTE',
-          onPressed: () {
-            // TODO: Implementation left
-          },
+          onPressed: submitVote,
         ),
       ],
     );

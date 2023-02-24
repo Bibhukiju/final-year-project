@@ -1,4 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:election/components/custom_snack_bar.dart';
+import 'package:election/constants/constants.dart';
+import 'package:election/exceptions/http_exception.dart';
+import 'package:election/constants/styles.dart';
 
 import 'package:election/components/custom_drop_down.dart';
 import 'package:election/components/custom_text_button.dart';
@@ -28,18 +36,55 @@ class _AreaSelectionScreenState extends State<AreaSelectionScreen> {
   final _citizenshipNameController = TextEditingController();
 
   /// Gets invoked when user clicks PROCEED button
-  void submitData() {
+  void submitData() async {
     // Validates the text form
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    // Checks if the user did not choose any value from the dropdown
+    if (initValues['province'] == '' ||
+        initValues['district'] == '' ||
+        initValues['area'] == '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Atleast one of the field is empty !',
+            textAlign: TextAlign.center,
+            style: Styles.buttonStyle,
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
       return;
     }
     // Assigning values to remaing Map fiels
     initValues['citizenshipId'] = _citizenshipIdController.text;
     initValues['citizenshipName'] = _citizenshipNameController.text;
 
-    // Navigates to Vote Screen if validation passes
-    Navigator.of(context)
-        .pushNamed(VotingScreen.routeName, arguments: initValues);
+    try {
+      final response = await http.post(Uri.parse('$hostUrl/user'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'name': citizenName,
+            'dob': '2058-11-25',
+            'citizenshipId': citizenId,
+          }));
+      final responseData = json.decode(response.body);
+      if (response.statusCode >= 400) {
+        throw HttpException(
+            exceptionMessage:
+                responseData['message'] ?? 'Status Code 400 Error');
+      }
+      // Navigates to Vote Screen if validation passes
+      Navigator.of(context).pushNamed(VotingScreen.routeName, arguments: {
+        'areaId': DummyData
+            .locationList[initValues['province']]![initValues['district']]!.firstWhere((item) => initValues['area'] == item['name'])['areaId'],
+      });
+    } on HttpException catch (e) {
+      showSnackBarWidget(ctx: context, message: e.toString());
+    } catch (_) {
+      showSnackBarWidget(ctx: context, message: 'Something Went Wrong!');
+    }
   }
 
   @override
@@ -165,7 +210,9 @@ class _DropDownAreaState extends State<DropDownArea> {
               : DummyData.locationList[widget.initValues['province']]![
                       widget.initValues['district']]!
                   .map((area) {
-                  return DropdownMenuItem(value: area, child: Text(area));
+                  return DropdownMenuItem(
+                      value: area['name'],
+                      child: Text(area['name'].toString()));
                 }).toList(),
           onChanged: widget.initValues['district']!.isEmpty
               ? null
@@ -207,7 +254,7 @@ class TextFieldArea extends StatelessWidget {
               if (value != null) {
                 if (value.isEmpty) {
                   return 'Citizenship ID cannot be empty';
-                } else if (value.length < 4) {
+                } else if (value.length < 2) {
                   return 'Citizenship ID too short';
                 } else if (value.length > 30) {
                   return 'Citizenship ID too long';
@@ -228,7 +275,7 @@ class TextFieldArea extends StatelessWidget {
               if (value != null) {
                 if (value.isEmpty) {
                   return 'Name cannot be empty';
-                } else if (value.length < 4) {
+                } else if (value.length < 2) {
                   return 'Name too short';
                 } else if (value.length > 30) {
                   return 'Name too long';
