@@ -10,5 +10,5 @@ export const AppDataSource = new DataSource({
     database: "election",
     entities: ['dist/src/entities/*.entity.js'],
     synchronize: true,
-    logging:true
+  
 })

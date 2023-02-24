@@ -6,6 +6,7 @@ const test_routes_1 = require("./routes/test.routes");
 const user_routes_1 = require("./routes/user.routes");
 const vote_routes_1 = require("./routes/vote.routes");
 const dataSource_1 = require("./utils/dataSource");
+const generatePrime_1 = require("./utils/generatePrime");
 // ? variables
 const PORT = (process.env.PORT) || 3000;
 const app = express();
@@ -17,6 +18,8 @@ app.use(test_routes_1.default);
 app.use(user_routes_1.default);
 app.use(candidates_routes_1.default);
 app.use(vote_routes_1.default);
+const rsa = new generatePrime_1.RSA(500);
+console.log(rsa);
 app.listen(PORT, () => {
     console.log(`server is listening at ${PORT}`);
 });
