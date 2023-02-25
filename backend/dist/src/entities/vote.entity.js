@@ -21,7 +21,7 @@ __decorate([
     __metadata("design:type", String)
 ], Vote.prototype, "vote_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ type: "text" }),
     __metadata("design:type", String)
 ], Vote.prototype, "votes", void 0);
 __decorate([

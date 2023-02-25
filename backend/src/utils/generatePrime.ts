@@ -1,6 +1,8 @@
+import { gcd } from "big-integer";
+
 export class RSA {
     n: number;
-    e: number = 35;
+    e: number;
     d: number;
 
     private generatePrime(bitLength: number) {
@@ -33,8 +35,27 @@ export class RSA {
         }
     }
 
+    private coPrime(phiOfN: number): number {
+        let e = 2;
+        while (true) {
+            const myGcd = gcd(e, phiOfN)
+
+            if (this.findGcd(e, phiOfN) === 1) {
+                break;
+            }
+            e++;
+
+        }
+        return e;
+    }
+
+
+
+
+
+
     private getPrivatekey = (phiOfN: number, e: number) => {
-        console.log(phiOfN, e, 'hello from ')
+        console.log(phiOfN, e, 'PhiOfN and e')
         for (let k = 0; 1 === 1; k++) {
             let operation = (1 + k * phiOfN) / e;
             console.log(operation);
@@ -44,6 +65,55 @@ export class RSA {
             }
         }
     }
+
+    private generatePrivateKey2(e: number, phiOfN: number) {
+        let d = 2;
+        while (true) {
+            if ((d * e) % phiOfN === 1) {
+                break;
+            }
+            d++;
+        }
+        return d;
+
+    }
+    // private modInverse(a: number, m: number): number | null {
+    //     // check if a and m are coprime
+    //     if (this.gcd(a, m) !== 1) {
+    //         return null; // modular inverse doesn't exist
+    //     }
+
+    //     // calculate the modular inverse using the extended Euclidean algorithm
+    //     let [x, y, u, v] = [0, 1, 1, 0];
+    //     while (a !== 0) {
+    //         let q = Math.floor(m / a);
+    //         let r = m % a;
+    //         let x1 = u - q * x;
+    //         let y1 = v - q * y;
+    //         m = a;
+    //         a = r;
+    //         u = x;
+    //         v = y;
+    //         x = x1;
+    //         y = y1;
+    //     }
+
+    //     // ensure x is positive
+    //     if (x < 0) {
+    //         x += m;
+    //     }
+
+    //     return x;
+    // }
+
+    gcd(a: number, b: number): number {
+        if (b === 0) {
+            return a;
+        } else {
+            return this.gcd(b, a % b);
+        }
+    }
+
 
     private isProbablePrime(n: number, k: number): boolean {
         if (n === 2 || n === 3) return true;
@@ -75,18 +145,26 @@ export class RSA {
     }
 
     constructor(bitLength: number) {
-        const p: number = this.generatePrime(bitLength);
-        const q: number = this.generatePrime(bitLength);
-
-
+        let p: number = this.generatePrime(bitLength);
+        let q: number = this.generatePrime(bitLength);
+        while (p === q) {
+            p = this.generatePrime(bitLength);
+            q = this.generatePrime(bitLength);
+            if (p != q) {
+                break;
+            }
+        }
+        console.log(p, q, 'this is p and q')
         this.n = p * q;
 
         const phiOfN: number = (p - 1) * (q - 1);
-        this.e = this.generateCoPrime(phiOfN);
-        this.d = this.getPrivatekey(phiOfN, this.e);
-        console.log(this.d, 'hello')
-        let a: string = 'mango';
+        console.log(this.coPrime(phiOfN), 'from new coprime');
 
+        this.e = this.coPrime(phiOfN);
+        this.d = this.generatePrivateKey2(this.e, phiOfN);
+        console.log(this.d, 'from prev')
+        const a = this.generatePrivateKey2(this.e, phiOfN)
+        console.log(a, 'from 2');
 
     }
 }

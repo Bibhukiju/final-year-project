@@ -1,9 +1,11 @@
 import { Router } from 'express';
-import { castvote } from '../controllers/vote.controller';
+import { decryptor } from '../utils/decrypter';
+
 import { validateVote } from '../utils/validateVote';
+import { castvote } from '../controllers/vote.controller';
 
 const voteRoutes = Router()
 
-voteRoutes.post('/vote', validateVote, castvote)
+voteRoutes.post('/vote', validateVote, decryptor, castvote)
 
 export default voteRoutes;

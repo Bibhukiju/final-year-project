@@ -6,12 +6,12 @@ const dataSource_1 = require("../utils/dataSource");
 const voteRepository = dataSource_1.AppDataSource.getRepository(vote_entity_1.Vote);
 const castvote = async (req, res) => {
     try {
-        console.log(req.body);
-        const { areaId, voteOrder } = req.body;
-        console.log(areaId, voteOrder);
-        const vote = voteRepository.create({ area_code: areaId, votes: voteOrder });
-        console.log(vote);
-        await voteRepository.save(vote);
+        // console.log(req.body)
+        // const { areaId, voteOrder } = req.body;
+        // console.log(areaId, voteOrder)
+        // const vote = voteRepository.create({ area_code: areaId, votes: voteOrder })
+        // console.log(vote)
+        // await voteRepository.save(vote);
         return res.send({ msg: 'vote casted' });
     }
     catch (error) {

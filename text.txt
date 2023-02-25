@@ -1,0 +1,1 @@
+SELECT `User`.`user_id` AS `User_user_id`, `User`.`citizenship_number` AS `User_citizenship_number`, `User`.`name` AS `User_name`, `User`.`date_of_birth` AS `User_date_of_birth` FROM `user` `User` WHERE (`User`.`name` = "Bibhu Kiju" AND `User`.`citizenship_number` = "29-01-75-00447" AND `User`.`date_of_birth` = "2058-11-25");

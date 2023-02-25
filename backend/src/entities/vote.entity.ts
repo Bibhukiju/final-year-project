@@ -6,7 +6,7 @@ export class Vote {
     @PrimaryGeneratedColumn('uuid')
     vote_id: string
 
-    @Column()
+    @Column({ type: "text" })
     votes: string
 
     @Column()
