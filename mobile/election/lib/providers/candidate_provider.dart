@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:election/providers/encrypt.dart';
 import 'package:flutter/material.dart';
+import 'package:election/providers/encrypt.dart';
 import 'package:http/http.dart' as http;
 import 'package:election/constants/constants.dart';
 
@@ -83,15 +83,10 @@ class CandidateProvider with ChangeNotifier {
 
   // Submits the vote
   Future<void> submitTheVoteOrder(String areaId) async {
-    print('submits the vote');
     final requestKey = await Encrypt().assignPublicKey();
-    print('e / n');
-    print(requestKey['e']);
-    print(requestKey['n']);
     final encryptedVote = Encrypt()
-        .encoders('hello_world', requestKey['e'], requestKey['n'])
+        .encoders(stringifyTheVote(voteOrder), requestKey['e'], requestKey['n'])
         .join('-');
-    print('encryptedVote=> $encryptedVote');
     try {
       final response = await http.post(Uri.parse('$hostUrl/vote'),
           headers: {'content-type': 'application/json'},
@@ -100,7 +95,7 @@ class CandidateProvider with ChangeNotifier {
             'vote': encryptedVote,
           }));
       final responseData = json.encode(response.body);
-      print(responseData);
+      //print(responseData);
     } catch (e) {
       print(e);
     }
