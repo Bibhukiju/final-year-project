@@ -1,4 +1,6 @@
 import 'dart:convert';
+
+import 'package:election/providers/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:election/constants/constants.dart';
@@ -7,7 +9,7 @@ import 'package:election/models/canditate_model.dart';
 
 class CandidateProvider with ChangeNotifier {
   late int encryptionKey;
-  
+
   List<CandidateModel> _candidateList = [];
 
   List<CandidateModel> get candidateList {
@@ -21,8 +23,14 @@ class CandidateProvider with ChangeNotifier {
     return _voteOrder;
   }
 
+  /// Returns [CandidateModel] from CandidateId
+  CandidateModel findCandidateById(String id) {
+    return candidateList.firstWhere((element) => element.id == id);
+  }
+
   /// Fetch the candidates
   Future<void> fetchCandidates(String areaId) async {
+    print(areaId);
     try {
       final response = await http.get(Uri.parse('$hostUrl/candidates/$areaId'));
       final responseData = json.decode(response.body);
@@ -59,39 +67,42 @@ class CandidateProvider with ChangeNotifier {
   }
 
   /// Converts List<String> to String format
-  /// Ex. ['a', 'b', 'c'] => a~b~c
+  /// Item gets enclosed by TILDE (~) operator
+  /// Ex. ['a', 'b', 'c'] => ~a~b~c~
   String stringifyTheVote(List<String> voteOrder) {
     var voteOrderString = '';
     for (var item in voteOrder) {
       if (voteOrderString.isEmpty) {
-        voteOrderString = item;
+        voteOrderString = '~$item';
         continue;
       }
       voteOrderString = '$voteOrderString~$item';
     }
-    return voteOrderString;
+    return '$voteOrderString~';
   }
 
   // Submits the vote
   Future<void> submitTheVoteOrder(String areaId) async {
     print('submits the vote');
+    final requestKey = await Encrypt().assignPublicKey();
+    print('e / n');
+    print(requestKey['e']);
+    print(requestKey['n']);
+    final encryptedVote = Encrypt()
+        .encoders('hello_world', requestKey['e'], requestKey['n'])
+        .join('-');
+    print('encryptedVote=> $encryptedVote');
     try {
       final response = await http.post(Uri.parse('$hostUrl/vote'),
           headers: {'content-type': 'application/json'},
           body: json.encode({
-            'voterId': '',
             'areaId': areaId,
-            'voteOrder': stringifyTheVote(voteOrder)
+            'vote': encryptedVote,
           }));
       final responseData = json.encode(response.body);
       print(responseData);
     } catch (e) {
       print(e);
     }
-  }
-
-  /// Returns [CandidateModel] from CandidateId
-  CandidateModel findCandidateById(String id) {
-    return candidateList.firstWhere((element) => element.id == id);
   }
 }

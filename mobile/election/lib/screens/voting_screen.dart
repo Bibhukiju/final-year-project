@@ -1,4 +1,5 @@
 import 'package:election/components/custom_snack_bar.dart';
+import 'package:election/providers/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -50,10 +51,9 @@ class _CandidatesGridAreaState extends State<CandidatesGridArea> {
       final extractedData =
           ModalRoute.of(context)!.settings.arguments as Map<String, String?>;
       final areaId = extractedData['areaId'];
-      print('area id: $areaId');
       fetchCandidateList =
           Provider.of<CandidateProvider>(context, listen: false)
-              .fetchCandidates('a02');
+              .fetchCandidates(areaId.toString());
       isInit = false;
     }
 
@@ -159,15 +159,10 @@ class _ButtonAreaState extends State<ButtonArea> {
           ctx: context,
           message:
               'No Votes Were Selected Or No Election Campaign In The This Area',
-              
-        duration: const Duration(seconds: 4));
-            
+          duration: const Duration(seconds: 4));
       return;
     }
-    Future.value(candidateProviderInstance.submitTheVoteOrder('a02'))
-        .catchError((e) {
-      print(e);
-    });
+    candidateProviderInstance.submitTheVoteOrder('a01');
   }
 
   @override
