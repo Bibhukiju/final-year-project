@@ -9,37 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Area = void 0;
+exports.Voted = void 0;
 const typeorm_1 = require("typeorm");
-const candidates_entity_1 = require("./candidates.entity");
-let Area = class Area {
-    area_id;
-    area;
-    district;
-    provience;
-    candidates;
+let Voted = class Voted {
+    voted_id;
+    voter_id;
 };
 __decorate([
-    (0, typeorm_1.PrimaryColumn)({ unique: true }),
+    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
     __metadata("design:type", String)
-], Area.prototype, "area_id", void 0);
+], Voted.prototype, "voted_id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Area.prototype, "area", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Area.prototype, "district", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Area.prototype, "provience", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => candidates_entity_1.Candidates, (candidate) => candidate.area),
-    __metadata("design:type", Array)
-], Area.prototype, "candidates", void 0);
-Area = __decorate([
+], Voted.prototype, "voter_id", void 0);
+Voted = __decorate([
     (0, typeorm_1.Entity)()
-], Area);
-exports.Area = Area;
+], Voted);
+exports.Voted = Voted;

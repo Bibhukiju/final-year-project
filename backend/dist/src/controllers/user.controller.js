@@ -12,16 +12,19 @@ const verifyUser = async (req, res) => {
             const user = await userRepository.find({
                 where: {
                     name,
+                    citizenship_number: citizenshipId,
                     date_of_birth: dob,
-                    citizenship_number: citizenshipId
                 }
             });
+            console.log(user);
+            console.log(user.length, 'length of user');
             if (user.length === 1) {
                 return res.status(200).send({ message: 'User found' });
             }
             else {
                 return res.status(404).send({
-                    message: 'User not found'
+                    message: 'User not found',
+                    user
                 });
             }
         }

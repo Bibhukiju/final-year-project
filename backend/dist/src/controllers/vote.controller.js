@@ -3,16 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.castvote = void 0;
 const vote_entity_1 = require("../entities/vote.entity");
 const dataSource_1 = require("../utils/dataSource");
+const number_to_ASCII_1 = require("../utils/number_to_ASCII");
 const voteRepository = dataSource_1.AppDataSource.getRepository(vote_entity_1.Vote);
 const castvote = async (req, res) => {
     try {
-        console.log(req.body);
-        const { areaId, voteOrder } = req.body;
-        console.log(areaId, voteOrder);
-        const vote = voteRepository.create({ area_code: areaId, votes: voteOrder });
+        const { vote } = req.body;
         console.log(vote);
-        await voteRepository.save(vote);
-        return res.send({ msg: 'vote casted' });
+        const decryptedText = (0, number_to_ASCII_1.decoder)(vote);
+        return res.send({ message: decryptedText });
     }
     catch (error) {
         console.log(error);

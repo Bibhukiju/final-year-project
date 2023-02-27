@@ -7,8 +7,15 @@ export class Area {
     @PrimaryColumn({ unique: true })
     area_id: string
 
-    @Column({ unique: true })
+    @Column()
     area: string
+
+    @Column()
+    district: string
+
+
+    @Column()
+    provience: string
 
     @OneToMany(() => Candidates, (candidate) => candidate.area)
     candidates: Candidates[]
