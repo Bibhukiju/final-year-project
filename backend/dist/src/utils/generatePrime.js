@@ -9,6 +9,9 @@ class RSA {
     generatePrime(bitLength) {
         while (true) {
             const p = Math.floor((Math.random() * bitLength) + 1);
+            if (p < 11) {
+                continue;
+            }
             if (p % 2 === 0)
                 continue;
             if (this.isProbablePrime(p, 20))
@@ -129,6 +132,7 @@ class RSA {
     constructor(bitLength) {
         let p = this.generatePrime(bitLength);
         let q = this.generatePrime(bitLength);
+        console.log(p, q, 'P,q');
         while (p === q) {
             p = this.generatePrime(bitLength);
             q = this.generatePrime(bitLength);

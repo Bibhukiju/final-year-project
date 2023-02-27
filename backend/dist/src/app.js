@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.rsa = void 0;
 const express = require("express");
 const candidates_routes_1 = require("./routes/candidates.routes");
 const test_routes_1 = require("./routes/test.routes");
@@ -18,19 +19,19 @@ app.use(test_routes_1.default);
 app.use(user_routes_1.default);
 app.use(candidates_routes_1.default);
 app.use(vote_routes_1.default);
-let rsa = new generatePrime_1.RSA(32);
-console.log(rsa);
+exports.rsa = new generatePrime_1.RSA(32);
 const getPublicKey = async (req, res) => {
     try {
-        if (rsa.d && rsa.n) {
-            console.log({ message: { e: rsa.e, n: rsa.n } });
-            return res.send({ message: { e: rsa.e, n: rsa.n } });
+        if (exports.rsa.d && exports.rsa.n) {
+            console.log({ message: { e: exports.rsa.e, n: exports.rsa.n } });
+            return res.send({ message: { e: exports.rsa.e, n: exports.rsa.n } });
         }
     }
     catch (error) {
         console.log(error);
     }
 };
+console.log(exports.rsa);
 app.get('/publickey', getPublicKey);
 app.listen(PORT, () => {
     console.log(`server is listening at ${PORT}`);

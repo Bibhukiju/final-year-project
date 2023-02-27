@@ -1,4 +1,4 @@
-import { gcd } from "big-integer";
+
 
 export class RSA {
     n: number;
@@ -41,7 +41,7 @@ export class RSA {
     private coPrime(phiOfN: number): number {
         let e = 2;
         while (true) {
-            const myGcd = gcd(e, phiOfN)
+            const myGcd = this.gcd(e, phiOfN)
 
             if (this.findGcd(e, phiOfN) === 1) {
                 break;
@@ -51,9 +51,6 @@ export class RSA {
         }
         return e;
     }
-
-
-
 
 
 
@@ -147,8 +144,6 @@ export class RSA {
         return true;
     }
 
-    
-
     constructor(bitLength: number) {
         let p: number = this.generatePrime(bitLength);
         let q: number = this.generatePrime(bitLength);
@@ -175,5 +170,3 @@ export class RSA {
 
     }
 }
-
-

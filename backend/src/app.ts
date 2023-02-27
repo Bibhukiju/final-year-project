@@ -23,9 +23,7 @@ app.use(userRouter)
 app.use(candidateRoutes)
 app.use(voteRoutes);
 
-let rsa = new RSA(32);
-
-console.log(rsa);
+export const rsa = new RSA(32);
 
 const getPublicKey = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -37,14 +35,11 @@ const getPublicKey = async (req: Request, res: Response): Promise<Response> => {
         console.log(error)
     }
 }
-
-
-
-
-
+console.log(rsa)
 app.get('/publickey', getPublicKey);
 
 app.listen(PORT, () => {
     console.log(`server is listening at ${PORT}`)
 })
+
 
