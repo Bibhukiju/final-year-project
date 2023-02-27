@@ -54,7 +54,7 @@ export class RSA {
 
 
 
-    private getPrivatekey = (phiOfN: number, e: number) => {
+     private getPrivatekey(phiOfN: number, e: number) {
         console.log(phiOfN, e, 'PhiOfN and e')
         for (let k = 0; 1 === 1; k++) {
             let operation = (1 + k * phiOfN) / e;

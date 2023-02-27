@@ -46,7 +46,7 @@ class RSA {
         }
         return e;
     }
-    getPrivatekey = (phiOfN, e) => {
+    getPrivatekey(phiOfN, e) {
         console.log(phiOfN, e, 'PhiOfN and e');
         for (let k = 0; 1 === 1; k++) {
             let operation = (1 + k * phiOfN) / e;
@@ -56,7 +56,7 @@ class RSA {
                 return operation;
             }
         }
-    };
+    }
     generatePrivateKey2(e, phiOfN) {
         let d = 2;
         while (true) {
