@@ -10,6 +10,6 @@
         "moduleResolution": "node",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "outDir": "dist/src/"
+        "outDir": "dist/src"
     }
 }

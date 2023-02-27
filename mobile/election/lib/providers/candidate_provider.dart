@@ -1,30 +1,20 @@
-import 'package:election/models/canditate_model.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:election/providers/encrypt.dart';
+import 'package:http/http.dart' as http;
+import 'package:election/constants/constants.dart';
+
+import 'package:election/models/canditate_model.dart';
 
 class CandidateProvider with ChangeNotifier {
-  // Dummy Data
-  List<CandidateModel> candidateList = [
-    CandidateModel(
-        id: 'c1',
-        candidateName: 'Mahesh Basnet',
-        placeName: 'Gundu, Bhkt',
-        candidateImageUrl: ''),
-    CandidateModel(
-        id: 'c2',
-        candidateName: 'Durlav Thapa',
-        placeName: 'Suryabinayak, Bhkt',
-        candidateImageUrl: ''),
-    CandidateModel(
-        id: 'c3',
-        candidateName: 'Avinash Karki',
-        placeName: 'Thimi, Bhkt',
-        candidateImageUrl: ''),
-    CandidateModel(
-        id: 'c4',
-        candidateName: 'Mahesh Basnet',
-        placeName: 'Gundu, Bhkt',
-        candidateImageUrl: ''),
-  ];
+  late int encryptionKey;
+
+  List<CandidateModel> _candidateList = [];
+
+  List<CandidateModel> get candidateList {
+    return _candidateList;
+  }
 
   final List<String> _voteOrder = [];
 
@@ -33,6 +23,33 @@ class CandidateProvider with ChangeNotifier {
     return _voteOrder;
   }
 
+  /// Returns [CandidateModel] from CandidateId
+  CandidateModel findCandidateById(String id) {
+    return candidateList.firstWhere((element) => element.id == id);
+  }
+
+  /// Fetch the candidates
+  Future<void> fetchCandidates(String areaId) async {
+    print(areaId);
+    try {
+      final response = await http.get(Uri.parse('$hostUrl/candidates/$areaId'));
+      final responseData = json.decode(response.body);
+      final extractedData = responseData['candidates'] as List<dynamic>;
+      final List<CandidateModel> extractedCandidateList = [];
+      for (var item in extractedData) {
+        extractedCandidateList.add(CandidateModel(
+          id: item['candidateId'],
+          candidateName: item['candidate_name'],
+          candidateImageUrl: item['candidate_url'],
+          placeName: item['candidacy_area'],
+        ));
+      }
+      _candidateList = extractedCandidateList;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
 
   /// Adds vote by order
   void assignTheVoteOrder(String candidateId) {
@@ -49,8 +66,38 @@ class CandidateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Returns [CandidateModel] from CandidateId
-  CandidateModel findCandidateById(String id) {
-    return candidateList.firstWhere((element) => element.id == id);
+  /// Converts List<String> to String format
+  /// Item gets enclosed by TILDE (~) operator
+  /// Ex. ['a', 'b', 'c'] => ~a~b~c~
+  String stringifyTheVote(List<String> voteOrder) {
+    var voteOrderString = '';
+    for (var item in voteOrder) {
+      if (voteOrderString.isEmpty) {
+        voteOrderString = '~$item';
+        continue;
+      }
+      voteOrderString = '$voteOrderString~$item';
+    }
+    return '$voteOrderString~';
+  }
+
+  // Submits the vote
+  Future<void> submitTheVoteOrder(String areaId) async {
+    final requestKey = await Encrypt().assignPublicKey();
+    final encryptedVote = Encrypt()
+        .encoders(stringifyTheVote(voteOrder), requestKey['e'], requestKey['n'])
+        .join('-');
+    try {
+      final response = await http.post(Uri.parse('$hostUrl/vote'),
+          headers: {'content-type': 'application/json'},
+          body: json.encode({
+            'areaId': areaId,
+            'vote': encryptedVote,
+          }));
+      final responseData = json.encode(response.body);
+      //print(responseData);
+    } catch (e) {
+      print(e);
+    }
   }
 }

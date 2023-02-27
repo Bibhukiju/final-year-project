@@ -9,31 +9,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Test = void 0;
 const typeorm_1 = require("typeorm");
-let User = class User {
-    user_id;
-    citizenship_number;
-    name;
-    date_of_birth;
+let Test = class Test {
+    id;
 };
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)("uuid"),
-    __metadata("design:type", String)
-], User.prototype, "user_id", void 0);
-__decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], User.prototype, "citizenship_number", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], User.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], User.prototype, "date_of_birth", void 0);
-User = __decorate([
+    __metadata("design:type", Number)
+], Test.prototype, "id", void 0);
+Test = __decorate([
     (0, typeorm_1.Entity)()
-], User);
-exports.User = User;
+], Test);
+exports.Test = Test;

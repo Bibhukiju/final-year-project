@@ -4,7 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon dist/src/app.js"
+    "dev": "nodemon dist/src/app.js",
+    "typeorm": "tsc && npx typeorm -d dist/src/utils/dataSource.js",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert"
   },
   
   "dependencies": {

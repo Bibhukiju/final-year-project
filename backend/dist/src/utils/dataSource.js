@@ -10,5 +10,9 @@ exports.AppDataSource = new typeorm_1.DataSource({
     password: "",
     database: "election",
     entities: ['dist/src/entities/*.entity.js'],
+<<<<<<< HEAD
+    logging: true,
+=======
+>>>>>>> 8182123ce764a1e1856b7496c192370606aca880
     synchronize: true,
 });
