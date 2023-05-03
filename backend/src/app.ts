@@ -6,6 +6,7 @@ import voteRoutes from "./routes/vote.routes";
 import { AppDataSource } from "./utils/dataSource";
 import { RSA } from "./utils/generatePrime";
 import { Request, Response } from "express";
+import { AES } from "./AES/aes";
 
 
 // ? variables
@@ -37,9 +38,16 @@ const getPublicKey = async (req: Request, res: Response): Promise<Response> => {
 }
 console.log(rsa)
 app.get('/publickey', getPublicKey);
+app.get("/", (req, res) => {
+    res.status(200).send("OK");
+})
+
+const aes: AES = new AES();
+console.log(aes.sharedSecret);
 
 app.listen(PORT, () => {
     console.log(`server is listening at ${PORT}`)
 })
 
 
+export default app;

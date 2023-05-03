@@ -8,6 +8,7 @@ const user_routes_1 = require("./routes/user.routes");
 const vote_routes_1 = require("./routes/vote.routes");
 const dataSource_1 = require("./utils/dataSource");
 const generatePrime_1 = require("./utils/generatePrime");
+const aes_1 = require("./AES/aes");
 // ? variables
 const PORT = (process.env.PORT) || 3000;
 const app = express();
@@ -33,6 +34,12 @@ const getPublicKey = async (req, res) => {
 };
 console.log(exports.rsa);
 app.get('/publickey', getPublicKey);
+app.get("/", (req, res) => {
+    res.status(200).send("OK");
+});
+const aes = new aes_1.AES();
+console.log(aes.sharedSecret);
 app.listen(PORT, () => {
     console.log(`server is listening at ${PORT}`);
 });
+exports.default = app;
