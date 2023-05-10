@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:election/exceptions/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:election/providers/encrypt.dart';
 import 'package:http/http.dart' as http;
@@ -25,29 +26,38 @@ class CandidateProvider with ChangeNotifier {
 
   /// Returns [CandidateModel] from CandidateId
   CandidateModel findCandidateById(String id) {
-    return candidateList.firstWhere((element) => element.id == id);
+    return candidateList.firstWhere((element) => element.candidateId == id);
   }
 
   /// Fetch the candidates
-  Future<void> fetchCandidates(String areaId) async {
-    print(areaId);
+  Future<void> fetchCandidates(String electionId) async {
+    print(electionId);
     try {
-      final response = await http.get(Uri.parse('$hostUrl/candidates/$areaId'));
+      final response =
+          await http.get(Uri.parse('$hostUrl/candidates/$electionId'));
+      if (response.statusCode >= 400) {
+        throw HttpException(exceptionMessage: 'Something Went Wrong');
+      }
       final responseData = json.decode(response.body);
       final extractedData = responseData['candidates'] as List<dynamic>;
+      print('candidateList = $extractedData');
       final List<CandidateModel> extractedCandidateList = [];
       for (var item in extractedData) {
         extractedCandidateList.add(CandidateModel(
-          id: item['candidateId'],
-          candidateName: item['candidate_name'],
-          candidateImageUrl: item['candidate_url'],
-          placeName: item['candidacy_area'],
+          candidateId: item['candidateId'],
+          candidateName: item['candidateName'],
+          candidateImageUrl: item['candidateImageUrl'],
+          politicalParty: item['politicalParty'],
         ));
       }
       _candidateList = extractedCandidateList;
       notifyListeners();
+    } on HttpException catch (e) {
+      print(e);
+      rethrow;
     } catch (e) {
       print(e);
+      rethrow;
     }
   }
 
@@ -82,22 +92,34 @@ class CandidateProvider with ChangeNotifier {
   }
 
   // Submits the vote
-  Future<void> submitTheVoteOrder(String areaId) async {
-    final requestKey = await Encrypt().assignPublicKey();
-    final encryptedVote = Encrypt()
-        .encoders(stringifyTheVote(voteOrder), requestKey['e'], requestKey['n'])
-        .join('-');
+  Future<void> submitTheVoteOrder(String electionId, String authToken) async {
+    // final requestKey = await Encrypt().assignPublicKey();
+    // final encryptedVote = Encrypt()
+    //     .encoders(stringifyTheVote(voteOrder), requestKey['e'], requestKey['n'])
+    //     .join('-');
+    notifyListeners();
+    print(authToken);
+    print('stringfy ${stringifyTheVote(voteOrder)}');
     try {
-      final response = await http.post(Uri.parse('$hostUrl/vote'),
-          headers: {'content-type': 'application/json'},
+      final response = await http.post(Uri.parse('$hostUrl/castVote'),
+          headers: {
+            'content-type': 'application/json',
+            'authorization': authToken,
+          },
           body: json.encode({
-            'areaId': areaId,
-            'vote': encryptedVote,
+            'electionId': electionId,
+            'votes': stringifyTheVote(voteOrder),
           }));
-      final responseData = json.encode(response.body);
-      //print(responseData);
+      final responseData = json.encode(response.body) as Map<String, String>;
+      print(
+          'castVote : ${json.encode(response.body)} ${responseData['msg'].toString()}');
+      if (response.statusCode >= 400) {
+        throw HttpException(exceptionMessage: 'Casting Vote Failed');
+      }
+    } on HttpException catch (_) {
+      rethrow;
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 }

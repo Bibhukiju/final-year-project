@@ -1,22 +1,26 @@
 import 'dart:convert';
 
+import 'package:election/screens/result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:election/components/custom_snack_bar.dart';
-import 'package:election/constants/constants.dart';
-import 'package:election/exceptions/http_exception.dart';
-import 'package:election/constants/styles.dart';
-
 import 'package:election/components/custom_drop_down.dart';
+import 'package:election/components/custom_snack_bar.dart';
 import 'package:election/components/custom_text_button.dart';
+import 'package:election/constants/constants.dart';
 import 'package:election/constants/fake_data/dummy_data.dart';
+import 'package:election/constants/styles.dart';
+import 'package:election/exceptions/http_exception.dart';
+import 'package:election/screens/election_screen.dart';
 import 'package:election/screens/voting_screen.dart';
+
 import '../components/custom_text_field.dart';
 
 class AreaSelectionScreen extends StatefulWidget {
   static const routeName = '/AreaSelectionScreen';
-  const AreaSelectionScreen({super.key});
+  const AreaSelectionScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<AreaSelectionScreen> createState() => _AreaSelectionScreenState();
@@ -27,20 +31,11 @@ class _AreaSelectionScreenState extends State<AreaSelectionScreen> {
     'province': '',
     'district': '',
     'area': '',
-    'citizenshipId': '',
-    'citizenshipName': ''
   };
-
-  final _formKey = GlobalKey<FormState>();
-  final _citizenshipIdController = TextEditingController();
-  final _citizenshipNameController = TextEditingController();
 
   /// Gets invoked when user clicks PROCEED button
   void submitData() async {
-    // Validates the text form
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    final isViewingResult = ModalRoute.of(context)!.settings.arguments as bool?;
     // Checks if the user did not choose any value from the dropdown
     if (initValues['province'] == '' ||
         initValues['district'] == '' ||
@@ -57,41 +52,19 @@ class _AreaSelectionScreenState extends State<AreaSelectionScreen> {
       );
       return;
     }
-    // Assigning values to remaing Map fiels
-    initValues['citizenshipId'] = _citizenshipIdController.text;
-    initValues['citizenshipName'] = _citizenshipNameController.text;
-
-    try {
-      final response = await http.post(Uri.parse('$hostUrl/user'),
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            'name': citizenName,
-            'dob': '2058-11-25',
-            'citizenshipId': citizenId,
-          }));
-      final responseData = json.decode(response.body);
-      if (response.statusCode >= 400) {
-        throw HttpException(
-            exceptionMessage:
-                responseData['message'] ?? 'Status Code 400 Error');
-      }
-      // Navigates to Vote Screen if validation passes
-      Navigator.of(context).pushNamed(VotingScreen.routeName, arguments: {
+    if (isViewingResult == true) {
+      Navigator.of(context).pushNamed(ResultScreen.routeName, arguments: {
         'areaId': DummyData
-            .locationList[initValues['province']]![initValues['district']]!.firstWhere((item) => initValues['area'] == item['name'])['areaId'],
+            .locationList[initValues['province']]![initValues['district']]!
+            .firstWhere((item) => initValues['area'] == item['name'])['areaId'],
       });
-    } on HttpException catch (e) {
-      showSnackBarWidget(ctx: context, message: e.toString());
-    } catch (_) {
-      showSnackBarWidget(ctx: context, message: 'Something Went Wrong!');
+      return;
     }
-  }
-
-  @override
-  void dispose() {
-    _citizenshipIdController.dispose();
-    _citizenshipNameController.dispose();
-    super.dispose();
+    Navigator.of(context).pushNamed(ElectionScreen.routeName, arguments: {
+      'areaId': DummyData
+          .locationList[initValues['province']]![initValues['district']]!
+          .firstWhere((item) => initValues['area'] == item['name'])['areaId'],
+    });
   }
 
   @override
@@ -109,11 +82,11 @@ class _AreaSelectionScreenState extends State<AreaSelectionScreen> {
           ),
 
           // TextField Area
-          TextFieldArea(
-            formKey: _formKey,
-            citizenshipIdController: _citizenshipIdController,
-            citizenshipNameController: _citizenshipNameController,
-          ),
+          // TextFieldArea(
+          //   formKey: _formKey,
+          //   citizenshipIdController: _citizenshipIdController,
+          //   citizenshipNameController: _citizenshipNameController,
+          // ),
 
           const SizedBox(
             height: 8,

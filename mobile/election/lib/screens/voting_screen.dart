@@ -1,13 +1,18 @@
-import 'package:election/components/custom_snack_bar.dart';
-import 'package:election/providers/encrypt.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
+import 'package:election/providers/candidate_provider.dart';
+
+import 'package:election/exceptions/http_exception.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:heroicons/heroicons.dart';
 
 import 'package:election/components/candidate_grid_tile.dart';
+import 'package:election/components/custom_snack_bar.dart';
 import 'package:election/components/custom_text_button.dart';
 import 'package:election/constants/constants.dart';
 import 'package:election/constants/styles.dart';
-import 'package:election/providers/candidate_provider.dart';
+import 'package:election/components/custom_dialog.dart';
 
 class VotingScreen extends StatelessWidget {
   static const routeName = '/VotingScreen';
@@ -15,20 +20,27 @@ class VotingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final extractedData =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     return Scaffold(
         body: SafeArea(
       child: Padding(
           padding: Styles.pagePadding,
           child: Column(
-            children: const [
+            children: [
               // Vote Selection Section
-              CandidatesGridArea(),
+              CandidatesGridArea(
+                electionId: extractedData['electionId'].toString(),
+              ),
 
               // Quick Guide Section
-              QuickGuideArea(),
+              const QuickGuideArea(),
 
               // Buttons
-              ButtonArea(),
+              ButtonArea(
+                electionId: extractedData['electionId'].toString(),
+                token: extractedData['token'].toString(),
+              ),
             ],
           )),
     ));
@@ -37,7 +49,11 @@ class VotingScreen extends StatelessWidget {
 
 // Vote Selection Area
 class CandidatesGridArea extends StatefulWidget {
-  const CandidatesGridArea({super.key});
+  final String electionId;
+  const CandidatesGridArea({
+    Key? key,
+    required this.electionId,
+  }) : super(key: key);
 
   @override
   State<CandidatesGridArea> createState() => _CandidatesGridAreaState();
@@ -48,12 +64,15 @@ class _CandidatesGridAreaState extends State<CandidatesGridArea> {
   @override
   void didChangeDependencies() {
     if (isInit) {
-      final extractedData =
-          ModalRoute.of(context)!.settings.arguments as Map<String, String?>;
-      final areaId = extractedData['areaId'];
+      final electionId = widget.electionId;
+      print('election id = $electionId');
+
       fetchCandidateList =
           Provider.of<CandidateProvider>(context, listen: false)
-              .fetchCandidates(areaId.toString());
+              .fetchCandidates(electionId.toString())
+              .catchError((e) {
+        print(e);
+      });
       isInit = false;
     }
 
@@ -92,7 +111,8 @@ class _CandidatesGridAreaState extends State<CandidatesGridArea> {
                       ),
                       itemBuilder: (ctx, index) {
                         return CustomGridTile(
-                          candidateId: candidateList[index].id.toString(),
+                          candidateId:
+                              candidateList[index].candidateId.toString(),
                         );
                       },
                     ),
@@ -144,31 +164,96 @@ class QuickGuideArea extends StatelessWidget {
 // Button Section
 // Contains RESET and VOTE buttons
 class ButtonArea extends StatefulWidget {
-  const ButtonArea({super.key});
+  String electionId;
+  String token;
+  ButtonArea({
+    Key? key,
+    required this.electionId,
+    required this.token,
+  }) : super(key: key);
 
   @override
   State<ButtonArea> createState() => _ButtonAreaState();
 }
 
 class _ButtonAreaState extends State<ButtonArea> {
-  void submitVote() {
-    final candidateProviderInstance =
+  void submitVote() async {
+    final candidateProviderData =
         Provider.of<CandidateProvider>(context, listen: false);
-    if (candidateProviderInstance.candidateList.isEmpty) {
+    if (candidateProviderData.voteOrder.isEmpty) {
       showSnackBarWidget(
           ctx: context,
           message:
               'No Votes Were Selected Or No Election Campaign In The This Area',
-          duration: const Duration(seconds: 4));
+          duration: const Duration(seconds: 2));
       return;
     }
-    candidateProviderInstance.submitTheVoteOrder('a01');
+    candidateProviderData.resetTheVoteOrder();
+    // Displaying loading Spinner
+    customShowDialog(context, 'CASTING VOTE',
+        const SpinKitPouringHourGlass(color: Color(0xFF082585)));
+    try {
+      // Submitting vote order
+      await candidateProviderData.submitTheVoteOrder(
+          widget.electionId, widget.token);
+      Navigator.of(context).pop();
+      // ignore: use_build_context_synchronously
+      customShowDialog(
+          context,
+          'Vote Casted Successfully',
+          const HeroIcon(
+            HeroIcons.check,
+            color: Color(0xFF082585),
+            size: 80,
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close')));
+    } on HttpException catch (e) {
+      Navigator.of(context).pop();
+      customShowDialog(
+          context,
+          e.toString(),
+          const HeroIcon(
+            HeroIcons.xMark,
+            color: Color(0xFF082585),
+            size: 80,
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Close', style: Styles.buttonStyle)));
+      // showSnackBarWidget(ctx: context, message: e.toString());
+    } catch (e) {
+      Navigator.of(context).pop();
+      customShowDialog(
+          context,
+          'Casting Vote Failed',
+          const HeroIcon(
+            HeroIcons.xMark,
+            color: Color(0xFF082585),
+            size: 80,
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Close',
+                style: Styles.buttonStyle,
+              )));
+      //showSnackBarWidget(ctx: context, message: e.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final candidateData =
         Provider.of<CandidateProvider>(context, listen: false);
+
     return Row(
       children: [
         CustomTextButton(

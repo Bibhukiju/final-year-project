@@ -95,3 +95,70 @@ class Encrypt {
     }
   }
 }
+
+
+// import 'dart:convert';
+// import 'dart:math';
+
+// class Encrypt {
+//   // to encrypt the given number
+//   dynamic encrypt(int message, int e, int n) {
+//     final encrpytedText = pow(message, e) % n;
+//     print('encrypted text: $encrpytedText');
+//     return encrpytedText;
+//   }
+
+// // first converting each character to its ASCII value and
+// // then encoding it then decoding the number to get the
+// // ASCII and converting it to character
+//   List<int> encoders(String message, int e, int n) {
+//     List<int> form = [];
+//     // calling the encrypting function in encoding function
+//     for (var i = 0; i < message.length; i++) {
+//       if (checkCharIsNumberOrNot(message[i])) {
+//         //console.log("number is detected in the string");
+//         form.add(encrypt(int.parse(message[i]), e, n));
+//       } else {
+//         form.add(encrypt(message[i].codeUnitAt(0), e, n));
+//       }
+//     }
+//     return form;
+//   }
+  
+//   String decoders(List<int> encryptedForm, int d, int n){
+//     List<int> dT= [];
+//     for(var i =0; i< encryptedForm.length; i++){
+//       dT.add(decrypt(encryptedForm[i], d, n));
+//     }
+//     print(dT);
+//     String oT= convertAsciiToString(dT);
+//     return oT;
+//   }
+  
+// String convertAsciiToString(List<int> asciiCodes) {
+//   String result = '';
+//   for (int code in asciiCodes) {
+//     result += String.fromCharCode(code);
+//   }
+//   return result;
+// }
+  
+//   dynamic decrypt(int msg, int d, int n){
+//     print('bigInt = ${BigInt.from(msg)}');
+//     return (BigInt.from(msg).pow(d) % BigInt.parse(n.toString())).toInt();
+//   }
+
+//   bool checkCharIsNumberOrNot(String message) {
+//     const numberArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+//     final noOfNumbers =
+//         numberArray.where((element) => element == message).toList();
+//     return noOfNumbers.isNotEmpty ? true : false;
+//   }
+// }
+
+// void main(){
+//   var p = Encrypt().encoders('zZ', 7, 779);
+//   print(p);
+//   var q= Encrypt().decoders(p, 103, 779);
+//   print(q);
+// }

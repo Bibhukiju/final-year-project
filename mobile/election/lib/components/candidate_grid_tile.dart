@@ -1,3 +1,4 @@
+import 'package:election/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -29,7 +30,7 @@ class CustomGridTile extends StatelessWidget {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(
-                            cadidateData.candidateImageUrl.toString()),
+                            '$hostUrl/uploads/${cadidateData.candidateImageUrl}'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -44,8 +45,7 @@ class CustomGridTile extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          cadidateData.placeName.toString(),
-                          overflow: TextOverflow.ellipsis,
+                          cadidateData.politicalParty.toString(),
                           textAlign: TextAlign.center,
                         ),
                       ],

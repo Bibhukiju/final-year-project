@@ -1,14 +1,12 @@
 class CandidateModel {
-  String? id;
+  String? candidateId;
   String? candidateName;
-  String? placeName;
   String? candidateImageUrl;
+  String? politicalParty;
   CandidateModel({
-    this.id,
+    this.candidateId,
     this.candidateName,
-    this.placeName,
     this.candidateImageUrl,
+    this.politicalParty,
   });
-
-
 }

@@ -1,13 +1,16 @@
+import 'package:election/providers/notice_provider.dart';
+import 'package:election/screens/area_selection_screen.dart';
+import 'package:election/screens/voting_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:election/screens/election_screen.dart';
 import 'package:election/constants/styles.dart';
 
 import '../components/menu_card.dart';
 import '../components/notice_tile.dart';
 import '../constants/fake_data/dummy_data.dart';
-import '../constants/fake_data/fakedata.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -20,27 +23,24 @@ class HomeScreen extends StatelessWidget {
           padding: Styles.pagePadding,
           child: Column(
             children: const [
-              // Carousel 
-               Expanded(
-                flex: 3,
-                child: Carousel(),
-              ),
-               SizedBox(
-                height: 5.0,
-              ),
+              // Carousel
+              //  Expanded(
+              //   flex: 3,
+              //   child: Carousel(),
+              // ),
+              //  SizedBox(
+              //   height: 5.0,
+              // ),
+
               // Notice Board
-               Expanded(
-                flex: 3,
-                child: NoticeBoard(),
-              ),
-               SizedBox(
+              NoticeBoard(),
+
+              SizedBox(
                 height: 5.0,
               ),
+
               // Menu Cards
-              Expanded(
-                flex: 5,
-                child: MenuCards(),
-              ),
+              MenuCards(),
             ],
           ),
         ),
@@ -48,7 +48,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
 
 // Carousel
 class Carousel extends StatefulWidget {
@@ -68,50 +67,48 @@ class _CarouselState extends State<Carousel> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-      final List<Widget> imageSliders = imageList
-      .map((item) => Container(
-            margin: const EdgeInsets.symmetric(horizontal: 5.0),
-            child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-                child: Stack(
-                  children: <Widget>[
-                    Image.network(item,
-                        fit: BoxFit.cover, width: double.infinity),
-                    Positioned(
-                      bottom: 0.0,
-                      left: 0.0,
-                      right: 0.0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color.fromARGB(200, 0, 0, 0),
-                              Color.fromARGB(0, 0, 0, 0)
-                            ],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
+    final List<Widget> imageSliders = imageList
+        .map((item) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                  child: Stack(
+                    children: <Widget>[
+                      Image.network(item,
+                          fit: BoxFit.cover, width: double.infinity),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(200, 0, 0, 0),
+                                Color.fromARGB(0, 0, 0, 0)
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
                           ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 20.0),
-                        child: Text(
-                          'No. ${DummyData.imgList.indexOf(item)} image',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 20.0),
+                          child: Text(
+                            'No. ${DummyData.imgList.indexOf(item)} image',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                )),
-          ))
-      .toList();
+                    ],
+                  )),
+            ))
+        .toList();
     return Column(
       children: [
         CarouselSlider(
@@ -155,14 +152,35 @@ class _CarouselState extends State<Carousel> {
   }
 }
 
-
 // Notice Board
-class NoticeBoard extends StatelessWidget {
+class NoticeBoard extends StatefulWidget {
   const NoticeBoard({super.key});
 
   @override
+  State<NoticeBoard> createState() => _NoticeBoardState();
+}
+
+class _NoticeBoardState extends State<NoticeBoard> {
+  late Future getNotices;
+  bool isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      getNotices =
+          Provider.of<NoticeProvider>(context).getNotices().catchError((e) {
+        print(e);
+      });
+
+      super.didChangeDependencies();
+    }
+    isInit = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final FakeData fakeData = FakeData();
+    final noticeData = Provider.of<NoticeProvider>(context).notices;
+    print(noticeData);
     return Container(
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
@@ -172,25 +190,53 @@ class NoticeBoard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("NEWS AND NOTICES", style: Styles.titleStyle),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 3,
-              itemBuilder: (BuildContext context, int index) => NoticeTile(
-                title: fakeData.newsData[fakeData.newsData.length - 1 - index]
-                        ["title"]
-                    .toString(),
-                link: fakeData.newsData[fakeData.newsData.length - 1 - index]
-                        ["link"]
-                    .toString(),
-              ),
-            ),
-          ),
+          FutureBuilder(
+              future: getNotices,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return const SizedBox(
+                      height: 200,
+                      width: double.infinity,
+                      child: Center(
+                        child: Text('Something went wrong'),
+                      ),
+                    );
+                  }
+                  if (noticeData.isNotEmpty) {
+                    return Column(
+                      children: noticeData
+                          .map((noticeItem) => NoticeTile(
+                                title: noticeItem.noticeTitle.toString(),
+                                description:
+                                    noticeItem.noticeDescription.toString(),
+                                issuedDate: noticeItem.issuedDate.toString(),
+                              ))
+                          .toList(),
+                      //itemBuilder: (BuildContext context, int index) =>
+                    );
+                  }
+                  return const SizedBox(
+                    height: 200,
+                    width: double.infinity,
+                    child: Center(
+                      child: Text(
+                        'No Notices Have Been Published',
+                        style: Styles.labelStyle,
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox(
+                  height: 200,
+                  width: double.infinity,
+                  child:  Center(child: CircularProgressIndicator()));
+              }),
         ],
       ),
     );
   }
 }
-
 
 // Menus Cards
 class MenuCards extends StatelessWidget {
@@ -203,22 +249,26 @@ class MenuCards extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        InkWell(
+        GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .pushNamed(ElectionScreen.routeName);
+            Navigator.of(context).pushNamed(AreaSelectionScreen.routeName);
           },
           child: const MenuCard(
               title: "VOTE",
               description:
-                  "Lets not waste our right to choose the candidate who represents us in a better way.",
+                  "Do not waste your citizen right. Utilize your vote to elect the better government.",
               iconData: Icons.how_to_vote_outlined),
         ),
-        const MenuCard(
-            title: "SEE RESULTS",
-            description:
-                "See the results of the latest election and get to know who got elected. You can see the results of any place.",
-            iconData: Icons.emoji_people_outlined),
+        GestureDetector(
+          onTap: () {
+            Navigator.of(context).pushNamed(AreaSelectionScreen.routeName, arguments: true);
+          },
+          child: const MenuCard(
+              title: "SEE RESULTS",
+              description:
+                  "See the results of the latest election and get to know who got elected. You can see the results of any place.",
+              iconData: Icons.emoji_people_outlined),
+        ),
         const MenuCard(
             title: "CANDIDATES",
             description:
