@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:election/constants/styles.dart';
+import 'package:flutter/material.dart';
 
 class MenuCard extends StatelessWidget {
   const MenuCard(
@@ -9,6 +9,7 @@ class MenuCard extends StatelessWidget {
       required this.iconData});
   final String title, description;
   final IconData iconData;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -16,32 +17,38 @@ class MenuCard extends StatelessWidget {
         horizontal: 18,
         vertical: 10,
       ),
+      margin: const EdgeInsets.symmetric(
+        vertical: 10,
+      ),
       decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(10.0)),
+      borderRadius: BorderRadius.circular(10),
+      color: Colors.grey.shade300,
+
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
+            flex: 8,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: Styles.titleStyle),
                 Text(
-                  description,
-                  style: Styles.subTitleStyle,
+                  title,
+                  style: Styles.titleStyle.copyWith(
+                    fontSize: 24
+                  ),
                 ),
-                const SizedBox(
-                  width: 15.0,
-                ),
+                Text(description)
               ],
             ),
           ),
-          const SizedBox(width: 10.0,),
-          Icon(
-            iconData,
-            size: 45,
-            color: const Color(0XFF082585),
+          Expanded(
+          flex: 2,
+            child: Icon(
+              iconData,
+              size: 45,
+              color: const Color(0xFF082585),
+            ),
           ),
         ],
       ),

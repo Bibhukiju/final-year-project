@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/candidate.models.dart';
+import '../models/candidate_models.dart';
 
 class CandidateTile extends StatelessWidget {
   const CandidateTile({
